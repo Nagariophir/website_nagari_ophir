@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nagari Ophir — Profil Nagari</title>
+<style>
+    :root{
+      /* GANTI ke path foto Anda jika beda lokasi/nama */
+      --bg-image: url('ophir.png');
+    }
+    *{ box-sizing: border-box }
+    html, body{ margin:0; padding:0px 0px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+    /* ===== Background foto TANPA overlay/gradien ===== */
+   
+    .hero{
+       margin: 0;
+  min-height: 100vh;
+                           /* tinggi area hero */
+      background: var(--bg-image) center/cover no-repeat;  /* FOTO SAJA */
+      display: flex; align-items: center;
+
+      color: #0b1262;                               /* biar teks tetap terbaca */
+    }
+    .hero-inner{
+      width: 100%; max-width: 1140px;
+      margin: 0 auto; padding: 80px 24px;
+    }
+    h1{ margin:0 0 8px; font-size: clamp(32px, 6vw, 56px); line-height:1.1 }
+    .tagline{ margin:0 12px 16px 0; font-size: clamp(16px, 2.4vw, 22px) }
+    .desc{ margin:0 0 20px; max-width:720px; line-height:1.6 }
+
+    .btn{
+      display:inline-block; padding:12px 18px; margin-right:8px;
+      border-radius:12px; text-decoration:none; font-weight:600;
+      border:1px solid rgba(255,255,255,.6); color:#ffffff; background: transparent;
+    }
+
+    /* contoh konten berikutnya (opsional) */
+    .wrap{ max-width:1140px; margin:32px auto; padding:0 24px }
+    ;
+  </style>
+</head>
+<body>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  :root{
+    --brand:#2563eb; --brand-2:transparent;
+    --bg-1:#f3f4f6;  --bg-2:#0f172a;
+    --card:#111827;  --glass:rgba(255,255,255,.06);
+    --text:#ffffff;  --muted:#ffffff;
+    --border:rgba(255,255,255,.18);
+  }
+  html,body{color-scheme:dark}
+  body{
+    font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg-1),var(--bg-2)) fixed;
+    color:var(--text)
+  }
+  .navbar{
+    background:rgba(19,19,92,1)!important;
+    backdrop-filter:saturate(180%) blur(14px);
+    z-index:1100;
+  }
+  .navbar .nav-link{color:#fff!important}
+  .navbar .nav-link:hover{color:#bfdbfe!important}
+  /* Tampilkan menu tanpa tombol agar selalu terlihat */
+  .navbar .navbar-collapse{display:flex!important;flex-basis:auto;justify-content:flex-end}
+  .navbar .navbar-nav{flex-direction:row;flex-wrap:wrap;gap:.25rem .5rem}
+  .navbar .nav-link{padding:.5rem .75rem}
+
+  .hero{position:relative;min-height:80vh;display:grid;place-items:center}
+  .hero .glass{background:var(--glass);border:1px solid var(--border);border-radius:16px}
+  .badge-soft{background:rgba(96,165,250,.25);border:1px solid rgba(255,255,255,.25)}
+  .section{padding:80px 0}
+  .card{background:var(--card);border:1px solid var(--border)}
+  .icon-wrap{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.12);display:grid;place-items:center}
+  .stat{font-weight:800;font-size:clamp(28px,5vw,44px)}
+  .map-container{height:420px}
+  .gallery img{object-fit:cover;height:220px;border-radius:12px}
+  footer{background:#0b1020}
+  .btn-brand{background:var(--brand);color:#fff;border:0}
+  .btn-brand:hover{filter:brightness(1.05)}
+  .text-muted{color:var(--muted)!important}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0b1020;color:#fff;border:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR (menu selalu tampak) -->
+<nav class="navbar navbar-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+      <img src="logo.png" alt="Logo" style="height:28px" />
+      <span>Nagari Ophir</span>
+    </a>
+    <div class="navbar-collapse show">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#sejarah">Sejarah</a></li>
+        <li class="nav-item"><a class="nav-link" href="#peta">Peta</a></li>
+        <li class="nav-item"><a class="nav-link" href="#jarak">Jarak Nagari</a></li>
+        <li class="nav-item"><a class="nav-link" href="#perangkat">Perangkat</a></li>
+        <li class="nav-item"><a class="nav-link" href="#admnistrasi">Administrasi</a></li>
+        <li class="nav-item"><a class="nav-link" href="#fasilitas">Fasilitas</a></li>
+        <li class="nav-item"><a class="nav-link" href="#potensi">Potensi</a></li>
+        <li class="nav-item"><a class="nav-link" href="#berita">Berita</a></li>
+        <li class="nav-item"><a class="nav-link" href="#galeri">Galeri</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- MARQUEE -->
+<marquee direction="left" scrollamount="6" style="background:#ffffff;color:#DC143C;padding:10px;font-weight:600">
+  Selamat Datang di Website Profil Nagari Ophir - Kecamatan Luhak Nan Duo, Kabupaten Pasaman Barat - Pelayanan dimulai pukul 08.00 s/d 12.00 wib dan dimulai kembali pukul 14.00 wib s/d 16.00 wib.
+</marquee>
+
+<!-- HERO -->
+<header class="hero container" 
+  style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+         url('ophir.png') center/cover no-repeat;">
+  <div class="row align-items-center w-100 g-4">
+    <div class="col-lg-7 text-white">
+      
+      <!-- Badge -->
+      <span class="badge bg-danger mb-3">
+  <i class="bi bi-stars me-1"></i> Profil Resmi
+</span>
+
+      <!-- Judul -->
+      <h1 class="display-5 fw-bold mb-2">Nagari Ophir</h1>
+      <p class="lead mb-3"><b>Maju, Berdaya, Berbudaya</b></p>
+      <p>
+        Selamat datang di laman resmi Nagari Ophir. Informasi singkat tentang nagari,
+        potensi, pelayanan, dan kegiatan terkini.
+      </p>
+
+      <!-- Tombol -->
+      <span class="badge bg-danger mb-3">
+  <i class="bi bi-stars me-1"></i> Profil Resmi
+</span>
+        <a href="#kontak" class="btn btn-outline-light btn-lg">
+          <i class="bi bi-telephone me-1"></i> Kontak
+        </a>
+      </div>
+
+      <!-- Statistik -->
+      <div class="d-flex gap-5 mt-4">
+        <div class="text-center">
+          <div class="display-4 fw-bold">1.349</div>
+          <div class="small">Penduduk</div>
+        </div>
+        <div class="text-center">
+          <div class="display-4 fw-bold">3</div>
+          <div class="small">Jorong</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+  <!-- Bootstrap + Icons + AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- Tailwind (tanpa preflight agar tidak bentrok Bootstrap) -->
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      corePlugins:{ preflight:false },
+      theme:{ extend:{
+        fontFamily:{ sans:["Inter","ui-sans-serif","system-ui"] },
+        colors:{ primary:{600:"#dc2626"}} // merah brand
+      }}
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet + Chart.js -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- THEME: MERAH – KRIM/ warna background --> 
+  <style>
+    :root{
+      --brand:#dc2626; --brand-2:#f87171;
+      --bg-1:#faebd7;  --bg-2:#b91c1c;
+      --card:#7f1d1d;  --glass:rgba(255,255,255,.08);
+      --text:#ffffff;  --muted:#ffe4e6;
+      --border:rgba(255,255,255,.25);
+    }
+    *{scroll-behavior:smooth}
+    html,body{color-scheme: dark;}
+    body{
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,var(--bg-1),var(--bg-2)) fixed;
+      color:var(--text)
+    }
+    .navbar{backdrop-filter:saturate(180%) blur(14px); background:rgba(128,0,0,.8)!important}
+    .navbar .nav-link{color:#ffffff!important}
+    .navbar .nav-link:hover{color:#ffe4e6!important}
+    .navbar .navbar-toggler{border-color:#ffffffb3}
+    .navbar .navbar-toggler-icon{filter:invert(1) brightness(2)}
+    .btn-brand{background:var(--brand);border:0;color:#fff}
+    .btn-brand:hover{filter:brightness(1.05)}
+    .btn-outline-light{border-color:#ffffffcc;color:#fff}
+    .btn-outline-light:hover{background:#ffffff1a}
+    .hero{
+      position:relative; isolation:isolate; min-height:82vh; display:grid; place-items:center;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(248,113,113,.28), transparent),
+        radial-gradient(900px 600px at -10% 10%, rgba(239,68,68,.20), transparent)
+    }
+    .hero-bg{position:absolute; inset:0; z-index:-1; overflow:hidden}
+    .hero-bg img{position:absolute; right:-6rem; bottom:-3rem; width:min(48vw,720px); opacity:.18; filter:grayscale(100%) contrast(1.1); animation:float 12s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(0,-18px)}}
+    .glass{background:var(--glass); border:1px solid var(--border); box-shadow:0 10px 30px rgba(0,0,0,.35); border-radius:16px}
+    .badge-soft{background:rgba(239,68,68,.35); color:#fff; border:1px solid rgba(255,255,255,.35)}
+    .card{background:var(--card); border:1px solid var(--border); color:var(--text)}
+    .card:hover{transform:translateY(-4px); transition:.25s ease}
+    .icon-wrap{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.12);color:#fff}
+    .section{padding:80px 0}
+    .gallery img{object-fit:cover; height:220px; border-radius:12px}
+    footer{background:#3b0d0d}
+    #loader{position:fixed;inset:0;display:grid;place-items:center;background:#3b0d0d;z-index:9999;transition:opacity .4s}
+    #loader.hidden{opacity:0;pointer-events:none}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--brand);margin:0 4px;display:inline-block;animation:bounce 1s infinite}
+    .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+    @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+    .stat{font-weight:800;font-size:clamp(28px,5vw,44px)}
+    dialog::backdrop{background:rgba(0,0,0,.65)}
+    .map-container{height:360px}
+    .text-muted{color:var(--muted)!important;opacity:1!important}
+    small, .small, label{color:var(--muted)!important}
+    .form-control, .form-select, textarea{background:#3b0d0d; color:#ffffff; border-color:var(--border);}
+    .form-control:focus, .form-select:focus, textarea:focus{
+      color:#ffffff; background:#4a1414; border-color:#f87171; 
+      box-shadow:0 0 0 .2rem rgba(239,68,68,.25);
+    }
+    ::placeholder{color:#fff0f0!important;opacity:.9}
+    .table-dark{
+      --bs-table-color:#fff;
+      --bs-table-striped-bg: rgba(255,255,255,.08);
+      --bs-table-striped-color:#fff;
+      --bs-table-hover-bg: rgba(255,255,255,.12);
+      --bs-table-hover-color:#fff;
+      border-color:var(--border);
+    }
+    a, .link-light{color:#ffffff!important}
+    a:hover{color:#ffe4e6!important}
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip{background:#3b0d0d;color:#fff;border:1px solid var(--border)}
+    .leaflet-control-attribution{color:#ffe4e6}
+
+    /* Mini style untuk bagan organisasi */
+    .org-wrap{--line:#ffffff40}
+    .org-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:18px}
+    .org-node{position:relative;background:#5e1313;border:1px solid #ffffff40;border-radius:12px;padding:10px 14px;min-width:220px;text-align:center}
+    .org-node .ttl{font-size:.78rem;opacity:.9}
+    .org-node .nm{font-weight:700}
+    .org-node.big{min-width:280px}
+    .org-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .org-card{background:#4a1010;border:1px solid #ffffff33;border-radius:12px;padding:12px}
+    .org-card h6{margin:0 0 6px 0}
+    .org-card ul{margin:0;padding-left:18px}
+  </style>
+</head>
+<body>
+
+<!-- Preloader -->
+<div id="loader"><div><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+
+  <!-- PROFIL -->
+  <section id="profil" class="section">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-6" data-aos="fade-up">
+          <div class="card p-4">
+            <h2 class="h3 mb-3">Profil Nagari</h2>
+            <p>Nagari Ophir berada di Provinsi Sumatera Barat. Halaman ini memuat informasi nagari, pelayanan publik, kegiatan masyarakat, dan potensi daerah.</p>
+          </div>
+        </div>
+
+        <!-- O-P-H-I-R -->
+        <div class="col-lg-6" data-aos="fade-left">
+          <div class="vstack gap-3">
+            <div class="card p-4 d-flex flex-row align-items-start gap-3" data-aos="fade-up" data-aos-delay="0">
+              <div class="icon-wrap flex-shrink-0"><span class="fw-bold fs-4">O</span></div>
+              <div><div class="fw-semibold mb-1">Optimis</div><div class="small text-muted">(penjelasan singkat huruf O)</div></div>
+            </div>
+            <div class="card p-4 d-flex flex-row align-items-start gap-3" data-aos="fade-up" data-aos-delay="90">
+              <div class="icon-wrap flex-shrink-0"><span class="fw-bold fs-4">P</span></div>
+              <div><div class="fw-semibold mb-1">Penuh Tanggung Jawab</div><div class="small text-muted">(penjelasan singkat huruf P)</div></div>
+            </div>
+            <div class="card p-4 d-flex flex-row align-items-start gap-3" data-aos="fade-up" data-aos-delay="180">
+              <div class="icon-wrap flex-shrink-0"><span class="fw-bold fs-4">H</span></div>
+              <div><div class="fw-semibold mb-1">Handal</div><div class="small text-muted">(penjelasan singkat huruf H)</div></div>
+            </div>
+            <div class="card p-4 d-flex flex-row align-items-start gap-3" data-aos="fade-up" data-aos-delay="270">
+              <div class="icon-wrap flex-shrink-0"><span class="fw-bold fs-4">I</span></div>
+              <div><div class="fw-semibold mb-1">Integritas</div><div class="small text-muted">(penjelasan singkat huruf I)</div></div>
+            </div>
+            <div class="card p-4 d-flex flex-row align-items-start gap-3" data-aos="fade-up" data-aos-delay="360">
+              <div class="icon-wrap flex-shrink-0"><span class="fw-bold fs-4">R</span></div>
+              <div><div class="fw-semibold mb-1">Ramah Dalam Melayani</div><div class="small text-muted">(penjelasan singkat huruf R)</div></div>
+            </div>
+          </div>
+        </div>
+        <!-- /O-P-H-I-R -->
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SEJARAH -->
+  <section id="sejarah" class="section pt-0">
+    <div class="container">
+      <h2 class="h3 mb-3">Sejarah Nagari Ophir</h2>
+      <div class="card p-4">
+        <p class="mb-2">Wilayah Ophir terletak diatas tanah dataran tinggi sekitar 2-246 Meter diatas permukan laut. Disebelah selatan Ibu kota Kabupaten Pasaman Barat berjarak + 11 Km dari Ibu Kota Kabupaten, dan berjarak ± 169 Km dari pusat Ibu Kota Provinsi Sumatera Barat. Ophir adalah satu nama daerah di Indonesia bagian Barat pulau Sumatera Barat, lebih tepatnya wilayah Ophir terletak di Nagari Simpang Tigo Koto Baru, Kecamatan Pasaman sebelum peralihan pemerintahan dari pemerintahan desa pada tahun 2003, menjadi Kecamatan Luhak Nan Duo.</p>
+        <p class="mb-2">Adapun Kabupaten Pasaman menjadi 2 (dua) bagian yaitu Kabupaten Kabupaten Pasaman Barat dan Kabupaten Pasaman Timur yang berdasarkan hasil pemekaran Undang-undang Nomor 38 Tahun 2003 tanggal 18 Desember 2003 yang menjadi Kabupaten Pasaman Barat, provinsi Sumatera Barat dengan Ibu Kota Kabupaten di Simpang Empat.</p>
+        <p class="mb-0">Kini Nagari Ophir terus berbenah melalui pelayanan publik, penguatan kelembagaan masyarakat, dan pemberdayaan ekonomi agar menjadi nagari yang maju, mandiri, dan berbudaya.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PETA NAGARI OPHIR -->
+  <section id="peta" class="section pt-0">
+    <div class="container">
+      <h2 class="h3 mb-3">Peta Nagari Ophir</h2>
+      <div class="card p-0 overflow-hidden">
+        <div id="map_ophir" class="map-container" style="height:420px"></div>
+        <div class="p-2 small text-muted">* Batas wilayah dapat dimuat dari berkas <code>ophir.geojson</code>.</div>
+      </div>
+    </div>
+  </section>
+
+      <!-- Tabel Jarak Nagari -->
+    <div class="glass p-4 mt-4 rounded">
+      <h3 class="h5 mb-3">Jarak Nagari Persiapan Ophir dengan Daerah Lain</h3>
+      <div class="table-custom">
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Nama Nagari</th>
+              <th>Kecamatan (KM)</th>
+              <th>Kabupaten (KM)</th>
+              <th>Provinsi (KM)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Koto Baru</td><td>2</td><td>11</td><td>164</td></tr>
+            <tr><td>2</td><td>Sariak</td><td>5</td><td>11</td><td>169</td></tr>
+            <tr><td>3</td><td>Ophir</td><td>5</td><td>11</td><td>169</td></tr>
+            <tr><td>4</td><td>Mahakarya</td><td>2</td><td>11</td><td>170</td></tr>
+            <tr><td>5</td><td>Sei Talang</td><td>0</td><td>10</td><td>169</td></tr>
+            <tr><td>6</td><td>Jambak</td><td>3</td><td>7</td><td>168</td></tr>
+            <tr><td>7</td><td>Pujorahyu</td><td>7</td><td>13</td><td>172</td></tr>
+            <tr><td>8</td><td>Giri Maju</td><td>9</td><td>15</td><td>174</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- End Tabel -->
+
+  </div>
+</section>
+
+<style>
+  .glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .table-custom {
+    overflow-x: auto;
+  }
+
+  .table-custom table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+
+  .table-custom th,
+  .table-custom td {
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .table-custom th {
+    background: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+  }
+
+  .table-custom tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+</style>
+
+
+  <!-- PERANGKAT -->
+  <section id="perangkat" class="section">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h3 mb-0">Perangkat Nagari</h2>
+        <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalPerangkat">
+          <i class="bi bi-diagram-3 me-1"></i> Lihat Perangkat Lengkap & Struktur
+        </button>
+      </div>
+      <div class="row g-3">
+        <!-- 4 kartu beranda -->
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="0">
+          <div class="card h-100">
+            <img src="wali.jpeg" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Edi Hartono, S.Sos.I">
+            <div class="card-body"><div class="fw-semibold">Edi Hartono, S.Sos.I</div><div class="small text-muted">Wali Nagari</div></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="100">
+          <div class="card h-100">
+            <img src="sekretaris.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Fadhlil Mustafa, SH.MH">
+            <div class="card-body"><div class="fw-semibold">Fadhlil Mustafa, SH.MH</div><div class="small text-muted">Sekretaris Nagari</div></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="200">
+          <div class="card h-100">
+            <img src="kasih_pemerintahan.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Ika Riwanti">
+            <div class="card-body"><div class="fw-semibold">Ika Riwanti</div><div class="small text-muted">Kasi Pemerintahan</div></div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="300">
+          <div class="card h-100">
+            <img src="Kasih_kesejahteraan_pelayanan.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Mayka Rahman, S.Sos">
+            <div class="card-body"><div class="fw-semibold">Mayka Rahman, S.Sos</div><div class="small text-muted">Kasi Pelayanan & Kesejahteraan</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FASILITAS -->
+<section id="fasilitas" class="section pt-0">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h3 mb-0">Fasilitas Umum Nagari</h2>
+      <span class="text-muted small">Ibadah • Pendidikan • Kesehatan • Olahraga</span>
+    </div>
+
+    <div class="row g-3">
+      <!-- Ibadah -->
+      <div class="col-md-3" data-aos="fade-up">
+        <div class="card p-4 h-100">
+          <div class="icon-wrap mb-2"><i class="bi bi-buildings fs-4"></i></div>
+          <div class="fw-semibold mb-1">Fasilitas Tempat Ibadah</div>
+          <ul class="mb-0 small">
+            <li>Masjid: <b>4</b></li>
+            <li>Mushola: <b>6</b></li>
+            <li>Gereja: <b>2</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pendidikan -->
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="80">
+        <div class="card p-4 h-100">
+          <div class="icon-wrap mb-2"><i class="bi bi-mortarboard fs-4"></i></div>
+          <div class="fw-semibold mb-1">Fasilitas Pendidikan</div>
+          <ul class="mb-0 small">
+            <li>TK/PAUD: <b>3</b></li>
+            <li>SD: <b>3</b></li>
+            <li>SMP: <b>1</b></li>
+            <li>SMA: <b>1</b></li>
+            <li>Perguruan Tinggi: <b>1</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Kesehatan -->
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="160">
+        <div class="card p-4 h-100">
+          <div class="icon-wrap mb-2"><i class="bi bi-heart-pulse fs-4"></i></div>
+          <div class="fw-semibold mb-1">Fasilitas Kesehatan</div>
+          <ul class="mb-0 small">
+            <li>Puskesmas: <b>1</b></li>
+            <li>Polindes: <b>2</b></li>
+            <li>Pos KB: <b>2</b></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Olahraga -->
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="240">
+        <div class="card p-4 h-100">
+          <div class="icon-wrap mb-2"><i class="bi bi-trophy fs-4"></i></div>
+          <div class="fw-semibold mb-1">Fasilitas Olahraga</div>
+          <ul class="mb-0 small">
+            <li>Lap. Sepak Bola: <b>2</b></li>
+            <li>Lap. Bulu Tangkis: <b>1</b></li>
+            <li>Lap. Voli: <b>1</b></li>
+            <li>Lap. Seni Bela Diri: <b>2</b></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- ADMINISTRASI PENDUDUK -->
+<section id="adm-penduduk" class="section pt-0">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="h3 mb-0">Administrasi Penduduk</h2>
+      <span class="text-muted small">Ringkasan data kependudukan</span>
+    </div>
+    <div class="row g-3">
+      <div class="col-6 col-md-3">
+        <div class="glass p-3 rounded h-100">
+          <div class="stat">4.405</div>
+          <div class="small text-muted">Jumlah Penduduk</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="glass p-3 rounded h-100">
+          <div class="stat">1.349</div>
+          <div class="small text-muted">Jumlah KK</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="glass p-3 rounded h-100">
+          <div class="stat">2.167</div>
+          <div class="small text-muted">Laki-laki</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="glass p-3 rounded h-100">
+          <div class="stat">2.238</div>
+          <div class="small text-muted">Perempuan</div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-4 mt-3">
+      <p class="mb-0">Data di atas menggambarkan kondisi kependudukan terbaru di Nagari Ophir, meliputi total penduduk, jumlah kepala keluarga (KK), serta komposisi penduduk laki-laki dan perempuan. Angka dapat diperbarui sewaktu-waktu sesuai hasil pemutakhiran administrasi.</p>
+    </div>
+
+  <!-- POTENSI -->
+  <section id="potensi" class="section">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Potensi Nagari</h2>
+        <span class="text-muted small">Ekonomi • Sosial • Budaya</span>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+          <div class="card p-4 h-100">
+            <div class="icon-wrap mb-2"><i class="bi bi-pin-map fs-4"></i></div>
+            <div class="fw-semibold mb-1">Perkebunan</div>
+            <div class="small text-muted">Kelapa sawit</div>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card p-4 h-100">
+            <div class="icon-wrap mb-2"><i class="bi bi-pin-map fs-4"></i></div>
+            <div class="fw-semibold mb-1">Kesenian</div>
+            <div class="small text-muted">Tari Tortor, Kuda Kepang, Wayang.</div>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card p-4 h-100">
+            <div class="icon-wrap mb-2"><i class="bi bi-pin-map fs-4"></i></div>
+            <div class="fw-semibold mb-1">UMKM</div>
+            <div class="small text-muted">Kuliner, kerajinan, jasa.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BERITA -->
+  <section id="berita" class="section">
+    <div class="container">
+      <div class="d-flex align-items-end justify-content-between mb-3">
+        <h2 class="h3 mb-0">Berita</h2>
+        <a href="#" class="small text-decoration-none">Lihat Arsip →</a>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <article class="card h-100">
+            <img src="upacara.jpeg" class="card-img-top" style="height:180px;object-fit:cover" alt="Dirgahayu RI ke-80">
+            <div class="card-body">
+              <div class="small text-muted mb-1"><i class="bi bi-calendar-event me-1"></i>17 Agu 2025</div>
+              <h3 class="h6 mb-1">Dirgahayu Republik Indonesia ke-80</h3>
+              <div class="small text-muted">Peringatan HUT RI ke-80 di Nagari Ophir berlangsung khidmat dengan upacara bendera dan aneka lomba rakyat.</div>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <article class="card h-100">
+            <img src="rapat.jpeg" class="card-img-top" style="height:180px;object-fit:cover" alt="Musyawarah Penggalian Gagasan">
+            <div class="card-body">
+              <div class="small text-muted mb-1"><i class="bi bi-calendar-event me-1"></i>13 Agu 2025</div>
+              <h3 class="h6 mb-1">Musyawarah Penggalian Gagasan Nagari Ophir 2025 untuk Anggaran 2026</h3>
+              <div class="small text-muted">Masyarakat menyampaikan usulan prioritas pembangunan untuk dimasukkan ke perencanaan tahun 2026.</div>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <article class="card h-100">
+            <img src="lidi.jpeg" class="card-img-top" style="height:180px;object-fit:cover" alt="Pelatihan Lidi Sawit">
+            <div class="card-body">
+              <div class="small text-muted mb-1"><i class="bi bi-calendar-event me-1"></i>08 Agu 2025</div>
+              <h3 class="h6 mb-1">Kegiatan Pelatihan Pengelolaan Lidi Sawit Nagari Ophir</h3>
+              <div class="small text-muted">Pelatihan peningkatan keterampilan pengelolaan lidi sawit untuk mendorong UMKM lokal.</div>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+          <article class="card h-100">
+            <img src="kknn.jpeg" class="card-img-top" style="height:180px;object-fit:cover" alt="Penyambutan Mahasiswa KKN">
+            <div class="card-body">
+              <div class="small text-muted mb-1"><i class="bi bi-calendar-event me-1"></i>01 Agu 2025</div>
+              <h3 class="h6 mb-1">Penyambutan Mahasiswa KKN ITS Khatulistiwa dan Universitas Bung Hatta</h3>
+              <div class="small text-muted">Pemerintah nagari menyambut mahasiswa KKN yang akan mengabdi di Nagari Ophir.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERI -->
+  <section id="galeri" class="section">
+    <div class="container">
+      <h2 class="h3 mb-4">Galeri</h2>
+      <div class="row g-3">
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="0">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('11.jpeg')">
+            <img class="w-100" src="11.jpeg" alt="Galeri 1">
+          </button>
+        </div>
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="60">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('Lomba.jpeg')">
+            <img class="w-100" src="Lomba.jpeg" alt="Galeri 2">
+          </button>
+        </div>
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="120">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('4.jpg')">
+            <img class="w-100" src="4.jpg" alt="Galeri 3">
+          </button>
+        </div>
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="180">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('5.jpg')">
+            <img class="w-100" src="5.jpg" alt="Galeri 4">
+          </button>
+        </div>
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="240">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('3.jpeg')">
+            <img class="w-100" src="3.jpeg" alt="Galeri 5">
+          </button>
+        </div>
+        <div class="col-6 col-md-4" data-aos="flip-left" data-aos-delay="300">
+          <button type="button" class="w-100 p-0 border-0 bg-transparent" onclick="openLightbox('1.jpeg')">
+            <img class="w-100" src="1.jpeg" alt="Galeri 6">
+          </button>
+        </div>
+      </div>
+      <dialog id="lightbox" class="rounded" style="border:0;background:transparent">
+        <img id="lightboxImg" src="" alt="Foto kegiatan" style="max-width:90vw;max-height:80vh;object-fit:contain"/>
+      </dialog>
+    </div>
+  </section>
+
+  <!-- KONTAK -->
+  <section id="kontak" class="section">
+    <div class="container">
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+          <div class="card p-4">
+            <h2 class="h3 mb-3">Kontak & Jam Layanan</h2>
+            <ul class="list-unstyled mb-3">
+              <li class="mb-2"><i class="bi bi-geo-alt me-2"></i>Alamat: — (Jln Mayor Said Zamzam RT.03 Ophir Barat)</li>
+              <li class="mb-2"><i class="bi bi-envelope me-2"></i>Email: <a class="link-light" href="mailto:ophirnagari79@gmail.com">ophirnagari79@gmail.com</a></li>
+              <li class="mb-2"><i class="bi bi-telephone me-2"></i>Telp/WA: 085264280383</li>
+              <li class="mb-2"><i class="bi bi-clock me-2"></i>Jam Layanan: Senin–Jumat 08.00–16.00 WIB</li>
+            </ul>
+            <div class="d-flex gap-2">
+              <a href="mailto:ophirnagari79@gmail.com" class="btn btn-outline-light"><i class="bi bi-envelope"></i> Email</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL: Perangkat Lengkap + Struktur -->
+<div class="modal fade" id="modalPerangkat" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content" style="background:#7f1d1d;color:#fff;border:1px solid rgba(255,255,255,.2)">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-people me-1"></i> Perangkat Nagari (Lengkap)</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-daftar" type="button" role="tab">Daftar Perangkat</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-struktur" type="button" role="tab">Struktur Organisasi</button></li>
+        </ul>
+        <div class="tab-content">
+          <!-- Daftar -->
+          <div class="tab-pane fade show active" id="tab-daftar" role="tabpanel">
+            <div class="row g-3">
+              <!-- gabungan officials_home + officials_more -->
+              <!-- (home) 4 orang -->
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="wali.jpeg" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Edi Hartono, S.Sos.I"><div class="card-body"><div class="fw-semibold">Edi Hartono, S.Sos.I</div><div class="small text-muted">Wali Nagari</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="sekretaris.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Fadhlil Mustafa, SH.MH"><div class="card-body"><div class="fw-semibold">Fadhlil Mustafa, SH.MH</div><div class="small text-muted">Sekretaris Nagari</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="kasih_pemerintahan.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Ika Riwanti"><div class="card-body"><div class="fw-semibold">Ika Riwanti</div><div class="small text-muted">Kasi Pemerintahan</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="Kasih_kesejahteraan_pelayanan.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Mayka Rahman, S.Sos"><div class="card-body"><div class="fw-semibold">Mayka Rahman, S.Sos</div><div class="small text-muted">Kasi Pelayanan & Kesejahteraan</div></div></div></div>
+
+              <!-- (more) -->
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="kaur_umum.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Yuliani, S.Pd"><div class="card-body"><div class="fw-semibold">Yuliani, S.Pd</div><div class="small text-muted">Kaur Umum</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="kaur_keuangan.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Dini Prihastiwi, S.Pd"><div class="card-body"><div class="fw-semibold">Dini Prihastiwi, S.Pd</div><div class="small text-muted">Kaur Keuangan</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="operator_it.jpeg" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Chelsy Yulinda Op Zainita"><div class="card-body"><div class="fw-semibold">Chelsy Yulinda Op Zainita</div><div class="small text-muted">Operator IT</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="operator_siskeudes.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Erivandi Yudha Pratama, S.Tr.T"><div class="card-body"><div class="fw-semibold">Erivandi Yudha Pratama, S.Tr.T</div><div class="small text-muted">Operator Siskeudes</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="oprator_sipades.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Yossy Herlida, SE"><div class="card-body"><div class="fw-semibold">Yossy Herlida, SE</div><div class="small text-muted">Operator Sipades</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="staff.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Aprillia Susanti"><div class="card-body"><div class="fw-semibold">Aprillia Susanti</div><div class="small text-muted">Satff</div></div></div></div>
+              <div class="col-6 col-md-3"><div class="card h-100"><img src="s.png" onerror="this.onerror=null;this.src='placeholder-person.jpg';" class="card-img-top" style="height:220px;object-fit:cover" alt="Nafisah Nursapni, SE"><div class="card-body"><div class="fw-semibold">Nafisah Nursapni, SE</div><div class="small text-muted">Satff</div></div></div></div>
+            </div>
+          </div>
+
+          <!-- Struktur 3 jenis (bagan) -->
+          <div class="tab-pane fade" id="tab-struktur" role="tabpanel">
+            <ul class="nav nav-pills mb-3" role="tablist">
+              <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#s-lpmn" type="button" role="tab">Struktur LPMN</button></li>
+              <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#s-karang" type="button" role="tab">Struktur Karang Taruna</button></li>
+              <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#s-pkk" type="button" role="tab">Struktur PKK</button></li>
+            </ul>
+
+            <div class="tab-content">
+              <!-- LPMN -->
+              <div class="tab-pane fade show active" id="s-lpmn" role="tabpanel">
+                <div class="org-wrap">
+                  <div class="org-row"><div class="org-node big"><div class="ttl">Ketua</div><div class="nm">AJAR MAHARGIYONO</div></div></div>
+                  <div class="org-row">
+                    <div class="org-node"><div class="ttl">Sekretaris</div><div class="nm">EPI ANTONI</div></div>
+                    <div class="org-node"><div class="ttl">Bendahara</div><div class="nm">ALI SYAHBANI</div></div>
+                  </div>
+                  <div class="org-grid mt-3">
+                    <div class="org-card"><h6 class="mb-1">Bidang Keagamaan & Kesejahteraan Rakyat</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">JAMAL, SE</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Pendidikan, Informasi & Komunikasi Masyarakat</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">RICKI RISWANDI</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Kesehatan</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">ERLIZA</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Lingkungan Hidup</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">RHYANDIKA ALDI</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Ekonomi & Pembangunan</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">MUSTAJAB</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Pemuda Olahraga</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">MUHAMMAD ARIF</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Pertanian & Peternakan</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">DIDIK SLAMET</div></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Kesenian & Budaya</h6><div class="small text-muted">Koordinator</div><div class="fw-bold">ALBERTUS JUNAIDI</div></div>
+                  </div>
+                </div>
+                <div class="text-center mt-4 small text-muted">(Opsional) Gambar bagan statis: <code>struktur_lpmn.png</code></div>
+                <div class="text-center mt-2"><img src="struktur_lpmn.png" alt="Struktur LPMN" class="img-fluid rounded border" style="max-height:70vh;object-fit:contain" onerror="this.style.display='none'"></div>
+              </div>
+
+              <!-- Karang Taruna -->
+              <div class="tab-pane fade" id="s-karang" role="tabpanel">
+                <div class="org-wrap">
+                  <div class="org-row"><div class="org-node"><div class="ttl">Pembina</div><div class="nm">Penjabat Wali Nagari Ophir</div></div></div>
+                  <div class="org-row"><div class="org-node big"><div class="ttl">Ketua</div><div class="nm">WISNU ADRIANTA UTAMA</div></div></div>
+                  <div class="org-row">
+                    <div class="org-node"><div class="ttl">Wakil Ketua I</div><div class="nm">MARIO SANJAYA SE</div></div>
+                    <div class="org-node"><div class="ttl">Wakil Ketua II</div><div class="nm">FAJRI PAMUNGKAS</div></div>
+                    <div class="org-node"><div class="ttl">Sekretaris</div><div class="nm">YULIANA OPRIYANTI SILALAHI, S.S</div></div>
+                    <div class="org-node"><div class="ttl">Bendahara</div><div class="nm">DESI SUSANTI S.Kep</div></div>
+                  </div>
+                  <div class="org-grid mt-3">
+                    <div class="org-card"><h6 class="mb-1">Bidang Humas & Kemitraan</h6><div class="small text-muted mb-1">Koordinator: <b>RICKI RISWANDI</b></div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>HEROZA FERDAUS S,Ak</li><li>TRI GALUH PRABOWO</li><li>RAHMAD DARMAWAN</li><li>SUSANTI</li><li>HENDRO</li><li>IBNU SAPUTRA</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Olahraga</h6><div class="small text-muted mb-1">Koordinator: <b>RHYANDIKA ALDI</b></div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>AGUNG ADITYA PRATAMA, SM</li><li>MEI DAMANTO</li><li>ANDRE SAPUTRA</li><li>BENO REINALDI</li><li>PURNAMA IRAWAN</li><li>TUGAS MURDIANTOP</li><li>AHMAD KUKUH ABIANTO</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Lingkungan Hidup</h6><div class="small text-muted mb-1">Koordinator: <b>YOSEF MARIOL</b></div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>GUSTIAR RAHMAD</li><li>ALOYSIUS A PERKASA</li><li>PIPO ANUARY</li><li>OVA DANIEL SINURAT</li><li>ROY SINAGA</li><li>DORY OKTOALDI</li><li>FAJAR SETIAWAN</li><li>YOGA BIMANTARA</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Kerohanian & Pembinaan Mental</h6><div class="small text-muted mb-1">Koordinator: <b>M. JAMAL</b></div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>PARWONO</li><li>YANA SINTRA A.Md</li><li>CESTY DEBORA SILALAHI S.Pd</li><li>EDISON FIDELIS SIDABARIBA</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Bidang Kesenian & Kebudayaan</h6><div class="small text-muted mb-1">Koordinator: <b>SURYADI</b></div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>BIMA PRASETIYA</li><li>KURNIANTIKA</li><li>ONY OKTARIA</li><li>TIUR SINABUTAR</li><li>WULANDARI</li></ul></div>
+                  </div>
+                </div>
+                <div class="text-center mt-4 small text-muted">(Opsional) Gambar bagan statis: <code>struktur_karang_taruna.png</code></div>
+                <div class="text-center mt-2"><img src="struktur_karang_taruna.png" alt="Struktur Karang Taruna" class="img-fluid rounded border" style="max-height:70vh;object-fit:contain" onerror="this.style.display='none'"></div>
+              </div>
+
+              <!-- PKK -->
+              <div class="tab-pane fade" id="s-pkk" role="tabpanel">
+                <div class="org-wrap">
+                  <div class="org-row"><div class="org-node"><div class="ttl">Pembina</div><div class="nm">Pj. Wali Nagari Ophir</div></div></div>
+                  <div class="org-row"><div class="org-node big"><div class="ttl">Ketua</div><div class="nm">Ny. NOFRIDESWITA HARTONO</div></div></div>
+                  <div class="org-row">
+                    <div class="org-node"><div class="ttl">Wakil Ketua I</div><div class="nm">ZUHELMI</div></div>
+                    <div class="org-node"><div class="ttl">Sekretaris I</div><div class="nm">YOSI HERLIDA</div></div>
+                    <div class="org-node"><div class="ttl">Sekretaris II</div><div class="nm">YULIA FAHRIANTI</div></div>
+                    <div class="org-node"><div class="ttl">Bendahara I</div><div class="nm">YULIANI</div></div>
+                    <div class="org-node"><div class="ttl">Bendahara II</div><div class="nm">LINA HASANAH</div></div>
+                  </div>
+                  <div class="org-grid mt-3">
+                    <div class="org-card"><h6 class="mb-1">Pokja I</h6><div class="small mb-1"><span class="text-muted">Ketua:</span> <b>LUSI HARYANTI</b></div><div class="small mb-1"><span class="text-muted">Wakil:</span> SAMSIATIN</div><div class="small mb-1"><span class="text-muted">Sekretaris:</span> ISLAMIYAH</div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>ELI SUARSIH</li><li>NURWAHDA</li><li>ARIFAH</li><li>HANI NURHAYATI</li><li>AZWARLINI</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Pokja II</h6><div class="small mb-1"><span class="text-muted">Ketua:</span> <b>DERLIANA</b></div><div class="small mb-1"><span class="text-muted">Wakil:</span> VIVIEN</div><div class="small mb-1"><span class="text-muted">Sekretaris:</span> MISDARWATI</div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>PARTINI</li><li>IKA RIWANTI</li><li>EVA NURHAYATI</li><li>ZUHELMI</li><li>VIVIEN</li><li>ENDANG ESTAWRINA</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Pokja III</h6><div class="small mb-1"><span class="text-muted">Ketua:</span> <b>HANDAYANI</b></div><div class="small mb-1"><span class="text-muted">Wakil:</span> SUMINI</div><div class="small mb-1"><span class="text-muted">Sekretaris:</span> ELIAWATI</div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>INDAH SARI</li><li>DINI PRIHASTIWI</li><li>IRA ELFI SUSANTI</li><li>SITI HANDAYANI</li><li>MARLINA</li><li>ERLIZA</li></ul></div>
+                    <div class="org-card"><h6 class="mb-1">Pokja IV</h6><div class="small mb-1"><span class="text-muted">Ketua:</span> <b>YULIANA</b></div><div class="small mb-1"><span class="text-muted">Wakil:</span> MAIZA</div><div class="small mb-1"><span class="text-muted">Sekretaris:</span> RATNA DWI CAHYANI, ONY OKTARIA</div><div class="small text-muted mb-1">Anggota:</div><ul class="small mb-0"><li>IKA SRIWAHYUNI</li><li>KUSWATI NINGSIH</li><li>AFRILIA HARTIKA</li><li>ANA MUTAFANI</li><li>DEWI GUSNIANTI</li><li>MUSTIKA SARI</li><li>RATNA DWI CAHYANI</li></ul></div>
+                  </div>
+                </div>
+                <div class="text-center mt-4 small text-muted">(Opsional) Gambar bagan statis: <code>struktur_pkk.png</code></div>
+                <div class="text-center mt-2"><img src="struktur_pkk.png" alt="Struktur PKK" class="img-fluid rounded border" style="max-height:70vh;object-fit:contain" onerror="this.style.display='none'"></div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /tab-content utama -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-brand" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="py-4 border-top border-secondary-subtle">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <div class="small text-muted">&copy; <span id="year"></span> 2025 Portal Web Nagari Ophir.</div>
+    <div class="small text-muted">KKN PPM ITS KHATULISTIWA.</div>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  // Preloader
+  window.addEventListener('load',()=>{document.getElementById('loader').classList.add('hidden')});
+  // AOS
+  AOS.init({ once:true, duration:700, easing:'ease-out-quart' });
+  // Navbar shadow
+  const nav=document.querySelector('.navbar');
+  window.addEventListener('scroll',()=>{ nav.classList.toggle('shadow-sm', window.scrollY>10) });
+
+  // Counter
+  const counters=document.querySelectorAll('.counter');
+  const io=new IntersectionObserver((entries,obs)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const el=e.target, target=parseInt(el.dataset.target,10)||0;
+        let cur=0, step=Math.ceil(target/60);
+        const tick=()=>{ cur+=step; if(cur>target) cur=target; el.textContent=cur.toLocaleString('id-ID'); if(cur<target) requestAnimationFrame(tick); };
+        tick(); obs.unobserve(el);
+      }
+    });
+  },{threshold:.6});
+  counters.forEach(c=>io.observe(c));
+
+  // Leaflet map (Peta Nagari Ophir) + dukung GeoJSON
+  const mapO = L.map('map_ophir').setView([-0.20379, 99.821373], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(mapO);
+  fetch('ophir.geojson')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(data){
+        const layer = L.geoJSON(data, { style: { color: '#ef4444', weight: 3, opacity: 0.9, fillColor: '#f87171', fillOpacity: 0.20 } }).addTo(mapO);
+        try{ mapO.fitBounds(layer.getBounds(), {padding:[20,20]}); }catch(_e){}
+      } else {
+        L.circleMarker([-0.20379, 99.821373], { radius: 8, color:'#ef4444', fillColor:'#ef4444', fillOpacity:0.9 }).addTo(mapO).bindPopup('Nagari Ophir');
+      }
+    })
+    .catch(()=>{
+      L.circleMarker([-0.20379, 99.821373], { radius: 8, color:'#ef4444', fillColor:'#ef4444', fillOpacity:0.9 }).addTo(mapO).bindPopup('Nagari Ophir');
+    });
+
+  // Chart.js
+  const pendudukChart=new Chart(document.getElementById('pendudukChart'),{
+    type:'bar',
+    data:{ labels:['0-5','6-12','13-17','18-30','31-45','46-60','>60'],
+      datasets:[
+        { label:'Laki-laki', data:[480,700,560,1200,800,520,200] },
+        { label:'Perempuan', data:[450,680,540,1100,780,510,250] }
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#ffffff' } } },
+      scales:{
+        x:{ ticks:{ color:'#ffffff' }, grid:{ color:'rgba(255,255,255,.2)' } },
+        y:{ beginAtZero:true, ticks:{ color:'#ffffff' }, grid:{ color:'rgba(255,255,255,.2)' } }
+      }
+    }
+  });
+  const pendidikanChart=new Chart(document.getElementById('pendidikanChart'),{
+    type:'line',
+    data:{ labels:['SD','SMP','SMA','Diploma','S1','S2+'],
+      datasets:[{ label:'Jumlah', data:[1800,1600,1400,300,220,40], tension:.35, fill:false }]
+    },
+    options:{
+      responsive:true,
+      plugins:{ legend:{ display:false } },
+      scales:{
+        x:{ ticks:{ color:'#ffffff' }, grid:{ color:'rgba(255,255,255,.2)' } },
+        y:{ ticks:{ color:'#ffffff' }, grid:{ color:'rgba(255,255,255,.2)' } }
+      }
+    }
+  });
+
+  // Galeri lightbox
+  function openLightbox(src){
+    const d=document.getElementById('lightbox'); const img=document.getElementById('lightboxImg');
+    if(!d||!img) return; img.src=src; d.showModal();
+    const closeHandler=(e)=>{ if(e.target.tagName!=='IMG'){ d.close(); d.removeEventListener('click',closeHandler);} };
+    d.addEventListener('click',closeHandler);
+  }
+  window.openLightbox=openLightbox;
+
+  // Footer year
+  document.getElementById('year').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
